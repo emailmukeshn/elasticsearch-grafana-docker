@@ -1,0 +1,33 @@
+version: '2'
+services:
+  elasticsearch:
+    build: elasticsearch/
+    ports:
+      - "9200:9200"
+    networks:
+      - elastic
+    volumes:
+      - elastic:/usr/share/elasticsearch/data
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - elasticsearch
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana:/var/lib/grafana
+    env_file:
+      - config.monitoring
+    networks:
+      - elastic
+    links:
+      - elasticsearch:elasticsearch
+
+volumes:
+  elastic:
+    driver: local
+  grafana:
+    driver: local
+networks:
+  elastic:
+    driver: bridge
